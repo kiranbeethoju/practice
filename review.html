@@ -1,0 +1,1985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Account {{ account.account_id }} - Healthcare Audit Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style>
+        :root {
+            --primary-green: #00ff88;
+            --secondary-green: #00cc6a;
+            --dark-bg: #0a0a0a;
+            --darker-bg: #050505;
+            --card-bg: #1a1a1a;
+            --text-light: #e0e0e0;
+            --text-muted: #888;
+            --border-color: #333;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(26, 26, 26, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #d4af37, #b8860b) !important;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: black !important;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+        }
+
+        /* Table Styles - Fixed Dark Theme */
+        .table {
+            color: white !important;
+            background: #1a1a1a !important;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .table th {
+            background: linear-gradient(45deg, #6691e1, #6691e1) !important;
+            color: black !important;
+            font-weight: 600;
+            border: none;
+            padding: 1rem;
+        }
+
+        .table td {
+            border-color: #333 !important;
+            padding: 1rem;
+            vertical-align: middle;
+            color: white !important;
+            background: #1a1a1a !important;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(0, 255, 136, 0.1) !important;
+        }
+
+        /* Force all table elements to use dark theme */
+        .table, .table *, table, table * {
+            color: white !important;
+            background-color: #1a1a1a !important;
+        }
+
+        .table th, table th {
+            background: linear-gradient(45deg, #6691e1, #6691e1) !important;
+            color: black !important;
+        }
+
+        .table td, table td {
+            color: white !important;
+            background-color: #1a1a1a !important;
+        }
+
+        /* Override Bootstrap table styles */
+        .table-striped > tbody > tr:nth-of-type(odd) > td {
+            background-color: #1a1a1a !important;
+            color: white !important;
+        }
+
+        .table-striped > tbody > tr:nth-of-type(even) > td {
+            background-color: #1f1f1f !important;
+            color: white !important;
+        }
+
+        /* Specific overrides for any remaining white text issues */
+        .card-body .table td,
+        .card-body .table th,
+        .card-body table td,
+        .card-body table th {
+            color: white !important;
+        }
+
+        .card-body .table th {
+            color: black !important;
+        }
+
+        /* Additional table overrides */
+        .table-responsive .table td,
+        .table-responsive .table th {
+            color: white !important;
+            background-color: #1a1a1a !important;
+        }
+
+        .table-responsive .table th {
+            color: black !important;
+        }
+
+        .match-exact {
+            background: linear-gradient(45deg, #4caf50, #66bb6a);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .match-specificity {
+            background: linear-gradient(45deg, #ff9800, #ffb74d);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .form-control, .form-select {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            border-radius: 10px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: var(--card-bg);
+            border-color: var(--primary-green);
+            color: var(--text-light);
+            box-shadow: 0 0 0 0.2rem rgba(0, 255, 136, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+        .stats-box {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #1f1f1f 100%);
+            border-left: 4px solid var(--primary-green);
+            padding: 0.5rem 0.75rem;
+            border-radius: 10px;
+        }
+        
+        /* Compact header styles */
+        .compact-header {
+            margin-bottom: 1rem !important;
+        }
+        
+        .compact-header h2 {
+            font-size: 1.3rem !important;
+            margin-bottom: 0 !important;
+        }
+        
+        .compact-stats .stats-box {
+            padding: 0.4rem 0.6rem !important;
+        }
+        
+        .compact-stats .stats-box h6 {
+            font-size: 0.7rem !important;
+            margin-bottom: 0.2rem !important;
+            font-weight: 600 !important;
+        }
+        
+        .compact-stats .stats-box h4 {
+            font-size: 1.1rem !important;
+            margin-bottom: 0 !important;
+            font-weight: bold !important;
+        }
+        
+        .compact-stats .stats-box .fw-bold {
+            font-size: 0.8rem !important;
+        }
+        
+        .compact-stats .stats-box small {
+            font-size: 0.65rem !important;
+        }
+        
+        .compact-stats .badge {
+            font-size: 0.65rem !important;
+            padding: 0.2rem 0.4rem !important;
+        }
+
+        .sidebar {
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            min-height: 100vh;
+        }
+
+        .main-content {
+            padding: 2rem;
+        }
+
+        .feedback-section {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+
+
+        .accuracy-high { color: var(--primary-green); }
+        .accuracy-medium { color: #ffa726; }
+        .accuracy-low { color: #ef5350; }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glow-effect {
+            position: relative;
+        }
+
+        .glow-effect::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary-green), var(--secondary-green));
+            border-radius: 15px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .glow-effect:hover::before {
+            opacity: 0.3;
+        }
+        /* Document Modal Styles */
+        .document-container {
+            scrollbar-width: thin;
+            scrollbar-color: #888 #f1f1f1;
+        }
+        
+        .document-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .document-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .document-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        .document-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        .document-section {
+            transition: all 0.3s ease;
+        }
+        
+        .document-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .document-title {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .document-content {
+            line-height: 1.6;
+        }
+        
+        .document-content p {
+            margin-bottom: 0.5rem;
+        }
+        
+        .document-content ul, .document-content ol {
+            margin-bottom: 1rem;
+        }
+        
+        .modal-xl {
+            max-width: 90%;
+        }
+        
+        /* Panel collapse/expand styles */
+        .sidebar-collapsed {
+            width: 50px !important;
+            min-width: 50px !important;
+        }
+        
+        .sidebar-collapsed .sidebar-content {
+            display: none;
+        }
+        
+        .sidebar-collapsed .collapse-toggle {
+            transform: rotate(180deg);
+        }
+        
+        .collapse-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary-green);
+            border: none;
+            color: black;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .collapse-toggle:hover {
+            background: var(--secondary-green);
+            transform: scale(1.1);
+        }
+        
+
+        
+        /* Document modal improvements */
+        .document-section {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--border-color) !important;
+            color: white !important;
+        }
+        
+        .document-title {
+            color: var(--primary-green) !important;
+        }
+        
+        .document-content {
+            color: white !important;
+        }
+        
+        /* Fix text colors for dark background */
+        .text-dark {
+            color: white !important;
+        }
+        
+        .text-muted {
+            color: #ffeb3b !important;
+        }
+        
+        .card-text {
+            color: white !important;
+        }
+        
+        .form-label {
+            color: white !important;
+        }
+        
+        .form-control::placeholder {
+            color: #ffeb3b !important;
+        }
+        
+        /* Fix table colors */
+        .table {
+            color: white !important;
+        }
+        
+        .table th {
+            color: black !important;
+            background-color: var(--primary-green) !important;
+        }
+        
+        .table td {
+            color: white !important;
+            background-color: transparent !important;
+        }
+        
+        .table-striped > tbody > tr:nth-of-type(odd) > td {
+            background-color: #f8f9fa !important;
+        }
+        
+        /* Fix account section colors */
+        .account-item {
+            color: white !important;
+        }
+        
+        .account-item .form-check-label {
+            color: white !important;
+        }
+        
+        .account-item .badge {
+            color: white !important;
+        }
+        
+        /* Remove cross/check marks from account panel */
+        .account-status-icon {
+            display: none !important;
+        }
+        
+        /* Comprehensive text color fixes */
+        body, body * {
+            color: white !important;
+        }
+
+        /* Override specific elements that need different colors */
+        .text-muted {
+            color: #ffeb3b !important;
+        }
+
+        .text-success {
+            color: var(--primary-green) !important;
+        }
+
+        .text-warning {
+            color: #ffeb3b !important;
+        }
+
+        .text-info {
+            color: #00bcd4 !important;
+        }
+
+        .text-danger {
+            color: #ef5350 !important;
+        }
+
+        /* Table text colors */
+        .table {
+            color: white !important;
+        }
+
+        .table th {
+            color: black !important;
+            background-color: var(--primary-green) !important;
+        }
+
+        .table td {
+            color: white !important;
+            background-color: transparent !important;
+        }
+
+        /* Card text colors */
+        .card {
+            color: white !important;
+        }
+
+        .card-body {
+            color: white !important;
+        }
+
+        .card-title {
+            color: white !important;
+        }
+
+        .card-text {
+            color: white !important;
+        }
+
+        /* Form text colors */
+        .form-label {
+            color: white !important;
+        }
+
+        .form-control {
+            color: white !important;
+            background-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        /* Badge text colors */
+        .badge {
+            color: inherit !important;
+        }
+
+        .bg-success {
+            color: white !important;
+        }
+
+        .bg-danger {
+            color: white !important;
+        }
+
+        .bg-warning {
+            color: white !important;
+        }
+
+        .bg-info {
+            color: white !important;
+        }
+
+        .bg-secondary {
+            color: white !important;
+        }
+
+        /* Heading colors */
+        h1, h2, h3, h4, h5, h6 {
+            color: white !important;
+        }
+
+        /* Paragraph and span colors */
+        p, span, div {
+            color: white !important;
+        }
+
+        /* Small text */
+        small {
+            color: #ffeb3b !important;
+        }
+
+        /* List colors */
+        li {
+            color: white !important;
+        }
+
+        /* Link colors */
+        a {
+            color: var(--primary-green) !important;
+        }
+
+        a:hover {
+            color: var(--secondary-green) !important;
+        }
+        
+
+        
+        /* Document highlight styling - yellow text on black background */
+        .document-highlight {
+            color: #ffff00 !important;
+            font-weight: bold !important;
+            background-color: #000000 !important;
+            border-radius: 3px !important;
+            padding: 1px 3px !important;
+        }
+        
+        /* Modal styling - black background with white text */
+        .modal-content {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+        }
+        
+        .modal-content * {
+            color: #ffffff !important;
+        }
+        
+        .modal-content .text-muted {
+            color: #ffeb3b !important;
+        }
+        
+        .modal-content .btn-close {
+            filter: invert(1);
+        }
+        
+        .modal-content .document-section {
+            background-color: #1a1a1a !important;
+            color: #ffffff !important;
+        }
+        
+        /* Accept/Reject button styles */
+        .btn-accept {
+            background-color: var(--primary-green);
+            color: black;
+            border: 2px solid var(--primary-green);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-accept:hover {
+            background-color: var(--secondary-green);
+            border-color: var(--secondary-green);
+        }
+        
+        .btn-reject {
+            background-color: #ff6b6b;
+            color: white;
+            border: 2px solid #ff6b6b;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-reject:hover {
+            background-color: #ff5252;
+            border-color: #ff5252;
+        }
+        
+        /* Inactive state for buttons (not disabled, just grey) */
+        .btn-accept.inactive,
+        .btn-reject.inactive {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: #adb5bd !important;
+            opacity: 0.7;
+            cursor: pointer;
+        }
+        
+        .btn-accept.inactive:hover,
+        .btn-reject.inactive:hover {
+            background-color: #5a6268 !important;
+            border-color: #5a6268 !important;
+            color: #ffffff !important;
+            opacity: 0.9;
+        }
+        
+        /* Active state for selected buttons */
+        .btn-accept.active {
+            background-color: var(--primary-green) !important;
+            border-color: var(--primary-green) !important;
+            color: black !important;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.6) !important;
+            transform: scale(1.05) !important;
+            border-width: 3px !important;
+        }
+        
+        .btn-reject.active {
+            background-color: #ff6b6b !important;
+            border-color: #ff6b6b !important;
+            color: white !important;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.6) !important;
+            transform: scale(1.05) !important;
+            border-width: 3px !important;
+        }
+
+        /* Enhanced Match Type Color Coding */
+        .match-match {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: #000218 !important;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 3px 6px rgba(40, 167, 69, 0.4);
+            border: 2px solid #1e7e34;
+            display: inline-block;
+            min-width: 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .match-match::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .match-match:hover::before {
+            left: 100%;
+        }
+
+        .match-mismatch {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%) !important;
+            color: white !important;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 3px 6px rgba(220, 53, 69, 0.4);
+            border: 2px solid #c82333;
+            display: inline-block;
+            min-width: 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .match-mismatch::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .match-mismatch:hover::before {
+            left: 100%;
+        }
+
+        .match-partial {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%) !important;
+            color: black !important;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+            border: 1px solid #e0a800;
+            display: inline-block;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .match-missing {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
+            color: white !important;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 3px 6px rgba(108, 117, 125, 0.4);
+            border: 2px solid #5a6268;
+            display: inline-block;
+            min-width: 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .match-missing::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .match-missing:hover::before {
+            left: 100%;
+        }
+
+        .match-unknown {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
+            color: white !important;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+            border: 1px solid #545b62;
+            display: inline-block;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        /* Force text color override for table cells - More specific selectors */
+        .table tbody td .match-match,
+        .table tbody td .match-mismatch,
+        .table tbody td .match-partial,
+        .table tbody td .match-missing,
+        .table tbody td .match-unknown {
+            color: inherit !important;
+            font-weight: bold;
+        }
+
+        /* Specific color overrides for each match type with higher specificity */
+        .table tbody td .match-match,
+        .table tbody tr td .match-match,
+        td .match-match {
+            
+        }
+
+        .table tbody td .match-mismatch,
+        .table tbody tr td .match-mismatch,
+        td .match-mismatch {
+            color: white !important;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .table tbody td .match-missing,
+        .table tbody tr td .match-missing,
+        td .match-missing {
+            color: white !important;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .table tbody td .match-partial,
+        .table tbody tr td .match-partial,
+        td .match-partial {
+            color: black !important;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+        }
+
+        .table tbody td .match-unknown,
+        .table tbody tr td .match-unknown,
+        td .match-unknown {
+            color: white !important;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* Additional override for any Bootstrap table styles */
+        .table .match-match,
+        .table .match-mismatch,
+        .table .match-partial,
+        .table .match-missing,
+        .table .match-unknown {
+            color: inherit !important;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+        }
+
+        /* Hover effects for match types */
+        .match-match:hover {
+            background: linear-gradient(135deg, #20c997 0%, #28a745 100%) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.4);
+        }
+
+        .match-mismatch:hover {
+            background: linear-gradient(135deg, #e74c3c 0%, #dc3545 100%) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.4);
+        }
+
+        .match-partial:hover {
+            background: linear-gradient(135deg, #ffb300 0%, #ffc107 100%) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(255, 193, 7, 0.4);
+        }
+
+        .match-missing:hover {
+            background: linear-gradient(135deg, #5a6268 0%, #6c757d 100%) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(108, 117, 125, 0.4);
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        /* Document Modal Styles */
+        .modal-content.bg-dark {
+            background-color: #1a1a1a !important;
+            color: white !important;
+        }
+
+        .modal-header {
+            background-color: #2a2a2a !important;
+            border-bottom: 1px solid #444 !important;
+        }
+
+        .modal-title {
+            color: white !important;
+        }
+
+        .modal-body {
+            background-color: #1a1a1a !important;
+            color: white !important;
+        }
+
+        .nav-tabs {
+            border-bottom: 1px solid #444 !important;
+        }
+
+        .nav-tabs .nav-link {
+            background-color: #2a2a2a !important;
+            color: #ccc !important;
+            border: 1px solid #444 !important;
+            border-bottom: none !important;
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: #1a1a1a !important;
+            color: white !important;
+            border-bottom: 1px solid #1a1a1a !important;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background-color: #333 !important;
+            color: white !important;
+        }
+
+        .tab-content {
+            background-color: #1a1a1a !important;
+            color: white !important;
+        }
+
+        .document-content {
+            background-color: #2a2a2a !important;
+            color: white !important;
+        }
+
+        .document-content pre {
+            color: white !important;
+            background-color: #2a2a2a !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Feedback Toast -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="feedbackToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <strong class="me-auto">Success</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Feedback submitted successfully!
+            </div>
+        </div>
+    </div>
+
+
+    
+
+    
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-stethoscope me-2"></i>
+                Healthcare Audit Tool
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Back to Dashboard
+                </a>
+                <a class="nav-link" href="/completed">
+                    <i class="fas fa-check-circle me-1"></i>
+                    Completed Accounts
+                </a>
+                <a class="nav-link" href="/validation">
+                    <i class="fas fa-chart-bar me-1"></i>
+                    Validation Dashboard
+                </a>
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user me-1"></i>
+                        {{ session.get('user_name', 'User') }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><span class="dropdown-item-text text-muted">
+                            <i class="fas fa-users me-2"></i>{{ session.get('user_team', 'No Team') }}
+                        </span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-md-12 main-content">
+                <!-- Header Section -->
+                <div class="row compact-header">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-2">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-search me-1"></i>
+                                    Review: {{ account.account_id }}
+                                </h4>
+                                <button class="btn btn-info btn-sm me-1" onclick="previewDocuments()">
+                                    <i class="fas fa-file-alt me-1"></i>
+                                    Preview
+                                </button>
+                                <button class="btn btn-primary btn-sm" id="randomChartBtn">
+                                    <i class="fas fa-random me-1"></i>
+                                    Random
+                                </button>
+                            </div>
+                            <div class="d-flex gap-2 compact-stats">
+                                <div class="stats-box">
+                                    <div class="row text-center">
+                                        <div class="col-3">
+                                            <h6 class="mb-1">Total SDX</h6>
+                                            <h4 class="mb-0">{{ account.total_sdx }}</h4>
+                                        </div>
+                                        <div class="col-3">
+                                            <h6 class="mb-1">LLM Matched SDX</h6>
+                                            <h4 class="mb-0">{{ account.llm_matched_sdx }}</h4>
+                                        </div>
+                                        <div class="col-3">
+                                            <h6 class="mb-1">MATCHED ICDs</h6>
+                                            <h4 class="mb-0">{{ account.matched_icds }}</h4>
+                                        </div>
+                                        <div class="col-3">
+                                            <h6 class="mb-1">ACCURACY</h6>
+                                            <h4 class="mb-0 accuracy-{{ 'high' if account.accuracy >= 80 else 'medium' if account.accuracy >= 60 else 'low' }}">
+                                                {{ account.accuracy }}%
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stats-box">
+                                    <h6 class="mb-2">PDX Information</h6>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <small class="text-muted">PDX CODED:</small>
+                                            <div class="fw-bold">{{ account.pdx_coded }}</div>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">LLM PDX:</small>
+                                            <div class="fw-bold">{{ account.pdx_llm }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <span class="badge {{ 'bg-success' if account.pdx_matched else 'bg-danger' }}">
+                                            MATCHED: {{ 'YES' if account.pdx_matched else 'NO' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                {% if account.has_cc_mcc_tags %}
+                                <div class="stats-box" style="min-width: 400px;">
+                                    <h6 class="mb-2">CC/MCC Comparison Table</h6>
+                                    <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+                                        <table class="table table-sm table-dark mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th style="font-size: 0.8rem;">Ground Truth SDX (CC/MCC)</th>
+                                                    <th style="font-size: 0.8rem;">LLM Extracted (CC/MCC)</th>
+                                                    <th style="font-size: 0.8rem;">Match Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% if account.cc_mcc_comparison %}
+                                                    {% for comparison in account.cc_mcc_comparison %}
+                                                        <tr>
+                                                            <td style="font-size: 0.8rem;">
+                                                                <strong>{{ comparison.gt_icd }}</strong>
+                                                                <br>
+                                                                <span class="badge {% if comparison.gt_cc_mcc == 'MCC' %}bg-danger{% elif comparison.gt_cc_mcc == 'CC' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                                                    {{ comparison.gt_cc_mcc }}
+                                                                </span>
+                                                            </td>
+                                                            <td style="font-size: 0.8rem;">
+                                                                {% if comparison.llm_icd %}
+                                                                    <strong>{{ comparison.llm_icd }}</strong>
+                                                                    <br>
+                                                                    <span class="badge {% if comparison.llm_cc_mcc == 'MCC' %}bg-danger{% elif comparison.llm_cc_mcc == 'CC' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                                                        {{ comparison.llm_cc_mcc }}
+                                                                    </span>
+                                                                {% else %}
+                                                                    <span class="text-muted">Not Found</span>
+                                                                {% endif %}
+                                                            </td>
+                                                            <td style="font-size: 0.8rem;">
+                                                                <span class="badge {% if comparison.match_type == 'Match' %}bg-success{% elif comparison.match_type == 'Specificity Issue' %}bg-warning{% else %}bg-danger{% endif %}">
+                                                                    {{ comparison.match_type }}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr>
+                                                        <td colspan="3" class="text-center text-muted" style="font-size: 0.8rem;">
+                                                            No CC/MCC data available
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+                <!-- B. Coded Procedures Table -->
+                {% if account.parsed_data and account.parsed_data.coded_procedures %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-procedures me-2"></i>
+                            B. Coded Procedures Table
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Procedure Performed</th>
+                                        <th>Date</th>
+                                        <th>ICD-10-PCS Code</th>
+                                        <th>Supporting Documentation</th>
+                                        <th>Coding Clinic/Guideline Reference</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for procedure in account.parsed_data.coded_procedures %}
+                                    <tr>
+                                        <td><strong>{{ procedure.get('Procedure Performed', '-') }}</strong></td>
+                                        <td>{{ procedure.get('Date', '-') }}</td>
+                                        <td>{{ procedure.get('ICD-10-PCS Code', '-') }}</td>
+                                        <td>{{ procedure.get('Supporting Documentation (Section, Note, Date)', '-') }}</td>
+                                        <td>{{ procedure.get('Coding Clinic/Guideline Reference', '-') }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+
+
+                <!-- C. MS-DRG Assignment and Rationale -->
+                {% if account.parsed_data and account.parsed_data.ms_drg_assignment %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-line me-2"></i>
+                            C. MS-DRG Assignment and Rationale
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Assigned DRG</th>
+                                        <th>Reasoning</th>
+                                        <th>References</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for drg in account.parsed_data.ms_drg_assignment %}
+                                    <tr>
+                                        <td><strong>{{ drg.get('Assigned DRG', '-') }}</strong></td>
+                                        <td>{{ drg.get('Reasoning', '-') }}</td>
+                                        <td>{{ drg.get('References', '-') }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- CSV Data Display -->
+                {% if account.csv_data %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-file-csv me-2"></i>
+                            Ground Truth Data
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% if account.csv_data.pdx %}
+                            <div class="col-md-6">
+                                <h6>PDX Data</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>ICD Code</th>
+                                                <th>Patient Encounter ID</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for pdx in account.csv_data.pdx %}
+                                            <tr>
+                                                <td><strong>{{ pdx.icd_code }}</strong></td>
+                                                <td>{{ pdx.pat_enc_id }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if account.csv_data.sdx %}
+                            <div class="col-md-6">
+                                <h6>SDX Data</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>ICD Code</th>
+                                                <th>Patient Encounter ID</th>
+                                                <th>CC/MCC</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for sdx in account.csv_data.sdx %}
+                                            <tr>
+                                                <td><strong>{{ sdx.icd_code }}</strong></td>
+                                                <td>{{ sdx.pat_enc_id }}</td>
+                                                <td>
+                                                    {% if sdx.cc_mcc and sdx.cc_mcc|string|strip and sdx.cc_mcc|string|lower != 'nan' %}
+                                                        <span class="badge {% if sdx.cc_mcc|string|lower == 'mcc' %}bg-danger{% elif sdx.cc_mcc|string|lower == 'cc' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                                            {{ sdx.cc_mcc|string|upper }}
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="text-muted">-</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Combination Codes Table (Low Validation Value) -->
+                {% if account.parsed_data and account.parsed_data.combination_code_review and account.parsed_data.combination_code_review|length > 0 %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-flag me-2"></i>
+                            Combination Codes (Low Validation Value)
+                            {% if account.diagnosis_comb_overlap %}
+                            <span class="badge bg-warning ms-2">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                {{ account.diagnosis_comb_overlap|length }} codes also in A. Diagnoses
+                            </span>
+                            {% endif %}
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        {% for column_name, column_value in account.parsed_data.combination_code_review[0].items() %}
+                                            <th>{{ column_name.upper().replace('_', ' ').replace('-', ' ') }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for diagnosis in account.parsed_data.combination_code_review %}
+                                    {% set icd_code = diagnosis.get('icd-10-cm code', '') or diagnosis.get('icd_code', '') or diagnosis.get('code', '') %}
+                                    {% set is_overlapping = icd_code in account.diagnosis_comb_overlap %}
+                                    <tr class="{% if is_overlapping %}table-warning{% endif %}">
+                                        {% for column_name, column_value in diagnosis.items() %}
+                                            <td>
+                                                {% if column_name.lower() in ['type', 'diagnosis_type'] %}
+                                                    <span class="badge badge-sm bg-gradient-{{ 'success' if column_value|string|upper == 'PDX' else 'warning' if column_value|string|upper == 'ADX' else 'info' }}">
+                                                        {{ column_value }}
+                                                    </span>
+                                                {% elif column_name.lower() in ['icd-10-cm code', 'icd_code', 'code'] %}
+                                                    <strong>{{ column_value }}</strong>
+                                                    {% if is_overlapping %}
+                                                    <br><small class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i>Also in A. Diagnoses</small>
+                                                    {% endif %}
+                                                {% elif column_name.lower() in ['cc/mcc', 'cc_mcc', 'ccmcc'] %}
+                                                    {% if column_value and column_value|string|strip %}
+                                                        <span class="badge {% if column_value|string|lower == 'mcc' %}bg-danger{% elif column_value|string|lower == 'cc' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                                            {{ column_value|string|upper }}
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="text-muted">-</span>
+                                                    {% endif %}
+                                                {% else %}
+                                                    {{ column_value }}
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Debug: Show if combination_code_review is missing -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-flag me-2"></i>
+                            Combination Codes (No Data Available)
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">No combination code review data available for this account.</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Existing Feedback Section -->
+                <div class="card mb-4" id="existingFeedbackSection" style="display: none;">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-history me-2"></i>
+                            Existing Feedback
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="existingFeedbackContent">
+                            <!-- Existing feedback will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review and Feedback Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-edit me-2"></i>
+                            Review and Feedback
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="feedbackForm">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            {% if account.review_items and account.review_items|length > 0 %}
+                                                {% for column_name, column_value in account.review_items[0].items() %}
+                                                    {% if column_name not in ['accept_reject', 'feedback_comment'] %}
+                                                        <th>{{ column_name.upper().replace('_', ' ') }}</th>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% else %}
+                                                <th>ICD CODE</th>
+                                                <th>ICD DESCRIPTION</th>
+                                                <th>REFERENCE LINE</th>
+                                                <th>SUPPORTING GUIDELINE</th>
+                                            {% endif %}
+                                            <th>SDX MATCH</th>
+                                            <th>ACCEPT / REJECT</th>
+                                            <th>FEEDBACK / COMMENT</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for review_item in account.review_items %}
+                                        <tr>
+                                            {% for column_name, column_value in review_item.items() %}
+                                                {% if column_name not in ['accept_reject', 'feedback_comment'] %}
+                                                    <td>
+                                                        {% if column_name == 'icd_code' %}
+                                                            <strong>{{ column_value }}</strong>
+                                                        {% elif column_name == 'cc_mcc' %}
+                                                            {% if column_value and column_value.strip() %}
+                                                                <span class="badge {% if column_value.lower() == 'mcc' %}bg-danger{% elif column_value.lower() == 'cc' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                                                    {{ column_value.upper() }}
+                                                                </span>
+                                                            {% else %}
+                                                                <span class="text-muted">-</span>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            {{ column_value }}
+                                                        {% endif %}
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <td>
+                                                {% if review_item.icd_code %}
+                                                    {% set sdx_match_result = review_item.icd_code | check_sdx_match(account.account_id, account.csv_data) %}
+                                                    {% if sdx_match_result.status == 'SDX Match' %}
+                                                        <span class="badge bg-success">SDX Match</span>
+                                                        <br><small class="text-muted">GT: {{ sdx_match_result.gt_codes|join(', ') }}</small>
+                                                    {% elif sdx_match_result.status == 'Specificity Issue' %}
+                                                        <span class="badge bg-warning">Specificity Issue</span>
+                                                        <br><small class="text-muted">GT: {{ sdx_match_result.gt_codes|join(', ') }}</small>
+                                                    {% else %}
+                                                        <span class="badge bg-danger">SDX Mismatch</span>
+                                                        {% if sdx_match_result.gt_codes %}
+                                                            <br><small class="text-muted">Available GT: {{ sdx_match_result.gt_codes|join(', ') }}</small>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="badge bg-secondary">No ICD Code</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <input type="radio" class="btn-check" name="status_{{ review_item.icd_code }}_{{ loop.index }}" 
+                                                           id="accept_{{ review_item.icd_code }}_{{ loop.index }}" value="accept" autocomplete="off">
+                                                    <label class="btn btn-accept btn-sm" for="accept_{{ review_item.icd_code }}_{{ loop.index }}">
+                                                        ACCEPT
+                                                    </label>
+                                                    
+                                                    <input type="radio" class="btn-check" name="status_{{ review_item.icd_code }}_{{ loop.index }}" 
+                                                           id="reject_{{ review_item.icd_code }}_{{ loop.index }}" value="reject" autocomplete="off">
+                                                    <label class="btn btn-reject btn-sm" for="reject_{{ review_item.icd_code }}_{{ loop.index }}">
+                                                        REJECT
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control form-control-sm" 
+                                                       name="feedback_{{ review_item.icd_code }}_{{ loop.index }}" 
+                                                       placeholder="Enter feedback...">
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Submitted Feedback Section -->
+                            {% set submitted_feedback = account.account_id | get_submitted_feedback %}
+                            {% if submitted_feedback %}
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-history me-2"></i>
+                                        Previously Submitted Feedback
+                                    </h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>ICD Code</th>
+                                                    <th>Status</th>
+                                                    <th>Feedback</th>
+                                                    <th>Reviewer</th>
+                                                    <th>Timestamp</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for feedback in submitted_feedback %}
+                                                <tr>
+                                                    <td><strong>{{ feedback.icd_code }}</strong></td>
+                                                    <td>
+                                                        {% if feedback.status == 'accept' %}
+                                                            <span class="badge bg-success">ACCEPTED</span>
+                                                        {% else %}
+                                                            <span class="badge bg-danger">REJECTED</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>{{ feedback.feedback or 'No comment' }}</td>
+                                                    <td>{{ feedback.reviewer }}</td>
+                                                    <td>{{ feedback.timestamp }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Feedback Section -->
+                            <div class="feedback-section mt-3">
+                                <h6 class="text-center mb-3">
+                                    <i class="fas fa-comments me-2"></i> Feedback
+                                </h6>
+                                <div class="feedback-item mb-3">
+                                    <label for="pdx_feedback" class="form-label small">PDX Feedback</label>
+                                    <textarea class="form-control" id="pdx_feedback" name="pdx_feedback" rows="2" placeholder="Enter PDX feedback..."></textarea>
+                                </div>
+                                <div class="feedback-item mb-3">
+                                    <label for="adx_feedback" class="form-label small">ADX Feedback</label>
+                                    <textarea class="form-control" id="adx_feedback" name="adx_feedback" rows="2" placeholder="Enter ADX feedback..."></textarea>
+                                </div>
+                                <div class="feedback-item mb-3">
+                                    <label for="sdx_feedback" class="form-label small">SDX Feedback</label>
+                                    <textarea class="form-control" id="sdx_feedback" name="sdx_feedback" rows="2" placeholder="Enter SDX feedback..."></textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="submit-section text-center p-3">
+                    <button type="button" class="btn btn-success btn-lg w-100" id="submitBtn">
+                        <i class="fas fa-check-circle me-2"></i> Submit Feedback
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Preview Modal -->
+    <div class="modal fade" id="documentModal" tabindex="-1" aria-labelledby="documentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="documentModalLabel">
+                        <i class="fas fa-file-alt me-2"></i>
+                        Document Preview
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="document-tabs">
+                        <ul class="nav nav-tabs" id="documentTabs" role="tablist">
+                            {% for doc_type, doc_data in account.documents.items() %}
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {{ 'active' if loop.first else '' }}" 
+                                        id="tab-{{ loop.index }}" 
+                                        data-bs-toggle="tab" 
+                                        data-bs-target="#content-{{ loop.index }}" 
+                                        type="button" 
+                                        role="tab">
+                                    {{ doc_data.title }}
+                                </button>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="tab-content mt-3" id="documentTabContent">
+                            {% for doc_type, doc_data in account.documents.items() %}
+                            <div class="tab-pane fade {{ 'show active' if loop.first else '' }}" 
+                                 id="content-{{ loop.index }}" 
+                                 role="tabpanel">
+                                <div class="document-content" style="background-color: {{ doc_data.color }}; padding: 20px; border-radius: 10px; max-height: 500px; overflow-y: auto;">
+                                    <pre style="color: white; white-space: pre-wrap; font-family: 'Courier New', monospace;">{{ doc_data.content }}</pre>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+
+        function initializeSearch() {
+            const searchInput = document.getElementById('globalSearch');
+            const clearBtn = document.getElementById('clearSearchBtn');
+            const moveBtn = document.getElementById('moveSearchBtn');
+            const searchContainer = document.getElementById('globalSearchContainer');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        performSearch(this.value);
+                    }, 300);
+                });
+
+                searchInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        navigateSearchResults('next');
+                    } else if (e.key === 'Escape') {
+                        clearSearch();
+                    }
+                });
+            }
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', clearSearch);
+            }
+
+            if (moveBtn) {
+                moveBtn.addEventListener('click', toggleSearchPosition);
+            }
+        }
+
+        function performSearch(query) {
+            if (!query || query.length < 1) {
+                clearSearch();
+                return;
+            }
+
+            searchResults = [];
+            currentSearchIndex = 0;
+
+            // Search in all text content
+            const searchableElements = document.querySelectorAll('p, span, div, td, th, h1, h2, h3, h4, h5, h6, li');
+            
+            searchableElements.forEach((element, index) => {
+                const text = element.textContent || element.innerText;
+                if (text.toLowerCase().includes(query.toLowerCase())) {
+                    searchResults.push({
+                        element: element,
+                        text: text,
+                        index: index
+                    });
+                }
+            });
+
+            highlightSearchResults(query);
+            updateSearchResultsPanel();
+        }
+
+        function highlightSearchResults(query) {
+            // Remove existing highlights
+            document.querySelectorAll('.search-match').forEach(el => {
+                const parent = el.parentNode;
+                parent.replaceChild(document.createTextNode(el.textContent), el);
+                parent.normalize();
+            });
+
+            if (!query) return;
+
+            // Highlight new matches
+            searchResults.forEach((result, index) => {
+                const element = result.element;
+                const text = element.textContent;
+                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                
+                if (regex.test(text)) {
+                    element.innerHTML = text.replace(regex, '<span class="search-match" data-index="' + index + '">$1</span>');
+                }
+            });
+        }
+
+        function updateSearchResultsPanel() {
+            const panel = document.getElementById('searchResultsPanel');
+            const content = document.getElementById('searchResultsContent');
+            const title = document.getElementById('searchResultsTitle');
+
+            if (!panel || !content) return;
+
+            if (searchResults.length === 0) {
+                panel.style.display = 'none';
+                return;
+            }
+
+            title.textContent = `Search Results (${searchResults.length})`;
+            content.innerHTML = '';
+
+            searchResults.forEach((result, index) => {
+                const item = document.createElement('div');
+                item.className = 'search-result-item';
+                item.innerHTML = `
+                    <div class="search-result-location">${result.element.tagName.toLowerCase()}</div>
+                    <div class="search-result-context">${result.text.substring(0, 100)}...</div>
+                `;
+                item.addEventListener('click', () => navigateToSearchResult(index));
+                content.appendChild(item);
+            });
+
+            panel.style.display = 'block';
+        }
+
+        function navigateToSearchResult(index) {
+            if (index >= 0 && index < searchResults.length) {
+                currentSearchIndex = index;
+                const result = searchResults[index];
+                result.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Highlight current result
+                document.querySelectorAll('.search-match').forEach(el => {
+                    el.style.backgroundColor = '';
+                });
+                
+                const currentMatch = document.querySelector(`[data-index="${index}"]`);
+                if (currentMatch) {
+                    currentMatch.style.backgroundColor = '#ffeb3b';
+                    currentMatch.style.color = '#000';
+                }
+            }
+        }
+
+        function navigateSearchResults(direction) {
+            if (searchResults.length === 0) return;
+
+            if (direction === 'next') {
+                currentSearchIndex = (currentSearchIndex + 1) % searchResults.length;
+            } else {
+                currentSearchIndex = currentSearchIndex === 0 ? searchResults.length - 1 : currentSearchIndex - 1;
+            }
+
+            navigateToSearchResult(currentSearchIndex);
+        }
+
+        function clearSearch() {
+            const searchInput = document.getElementById('globalSearch');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+            
+            // Remove highlights
+            document.querySelectorAll('.search-match').forEach(el => {
+                const parent = el.parentNode;
+                parent.replaceChild(document.createTextNode(el.textContent), el);
+                parent.normalize();
+            });
+
+            // Hide results panel
+            const panel = document.getElementById('searchResultsPanel');
+            if (panel) {
+                panel.style.display = 'none';
+            }
+
+            searchResults = [];
+            currentSearchIndex = 0;
+        }
+
+        function toggleSearchPosition() {
+            const container = document.getElementById('globalSearchContainer');
+            if (container) {
+                container.classList.toggle('search-moved');
+            }
+        }
+
+        function closeSearchResults() {
+            const panel = document.getElementById('searchResultsPanel');
+            if (panel) {
+                panel.style.display = 'none';
+            }
+            // Clear search input
+            const searchInput = document.getElementById('globalSearch');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+            // Remove highlights
+            const highlightedElements = document.querySelectorAll('.search-highlight');
+            highlightedElements.forEach(el => {
+                el.classList.remove('search-highlight');
+            });
+        }
+
+        // Text selection search
+        function initializeTextSelectionSearch() {
+            const selectionSearch = document.getElementById('selectionSearch');
+            
+            document.addEventListener('mouseup', function() {
+                const selection = window.getSelection();
+                const selectedText = selection.toString().trim();
+                
+                if (selectedText.length > 0) {
+                    // Position the selection search near the cursor
+                    const range = selection.getRangeAt(0);
+                    const rect = range.getBoundingClientRect();
+                    
+                    if (selectionSearch) {
+                        selectionSearch.style.display = 'block';
+                        selectionSearch.style.position = 'fixed';
+                        selectionSearch.style.left = rect.right + 'px';
+                        selectionSearch.style.top = rect.top + 'px';
+                        selectionSearch.style.zIndex = '9999';
+                        
+                        // Add click handler for the selection search
+                        selectionSearch.onclick = function() {
+                            const searchInput = document.getElementById('globalSearch');
+                            if (searchInput) {
+                                searchInput.value = selectedText;
+                                performSearch(selectedText);
+                            }
+                            selectionSearch.style.display = 'none';
+                        };
+                    }
+                } else {
+                    if (selectionSearch) {
+                        selectionSearch.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Document preview functionality
+        function previewDocuments() {
+            const documentModal = new bootstrap.Modal(document.getElementById('documentModal'));
+            documentModal.show();
+        }
+
+        // Get random unreviewed chart functionality
+        function getRandomUnreviewedChart() {
+            fetch('/api/get_random_unreviewed')
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            alert('No unreviewed charts available.');
+                            return;
+                        }
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && data.account_id) {
+                        window.location.href = `/review/${data.account_id}`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching random chart:', error);
+                    alert('Error getting random chart. Please try again.');
+                });
+        }
+
+        // Main functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const submitBtn = document.getElementById('submitBtn');
+            const feedbackForm = document.getElementById('feedbackForm');
+            const feedbackToastEl = document.getElementById('feedbackToast');
+            const feedbackToast = new bootstrap.Toast(feedbackToastEl);
+            
+            // Add event listener for random chart button
+            const randomChartBtn = document.getElementById('randomChartBtn');
+            if (randomChartBtn) {
+                randomChartBtn.addEventListener('click', getRandomUnreviewedChart);
+            }
+
+            if (submitBtn) {
+                submitBtn.addEventListener('click', function () {
+                    const formData = new FormData(feedbackForm);
+                    const accountId = '{{ account.id }}';
+                    
+                    fetch(`/submit_feedback/${accountId}`, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(data => {
+                                console.error("Server Error Response:", data);
+                                throw new Error(data.message || `Server responded with ${response.status}`);
+                            }).catch(() => {
+                                return response.text().then(text => { 
+                                    console.error("Server Error Response:", text);
+                                    throw new Error(`Server responded with ${response.status}`); 
+                                });
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.status === 'success') {
+                            feedbackToast.show();
+                            // Optional: redirect or update UI after a delay
+                            setTimeout(() => {
+                                window.location.href = '/'; // Redirect to dashboard
+                            }, 2000);
+                        } else {
+                            alert('An error occurred: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while submitting feedback. Please check the console for details.');
+                    });
+                });
+            }
+
+            // Existing Feedback Fetch
+            const accountId = '{{ account.id }}';
+            if (accountId) {
+                fetch(`/api/account_feedback/${accountId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            displayExistingFeedback(data);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading existing feedback:', error);
+                    });
+            }
+        });
+
+        function displayExistingFeedback(feedbackData) {
+            const section = document.getElementById('existingFeedbackSection');
+            const content = document.getElementById('existingFeedbackContent');
+            if (!section || !content) return;
+
+            let html = '<div class="table-responsive"><table class="table table-sm table-dark">';
+            html += '<thead><tr><th>ICD Code</th><th>Decision</th><th>Comment</th><th>PDX Feedback</th><th>ADX Feedback</th><th>SDX Feedback</th><th>Reviewer</th><th>Timestamp</th></tr></thead><tbody>';
+            
+            feedbackData.forEach(feedback => {
+                const badgeClass = feedback.accept_reject === 'accept' ? 'badge bg-success' : 
+                                 feedback.accept_reject === 'reject' ? 'badge bg-danger' : 'badge bg-warning';
+                
+                html += `<tr>
+                    <td><strong>${feedback.icd_code || '-'}</strong></td>
+                    <td><span class="${badgeClass}">${(feedback.accept_reject || 'N/A').toUpperCase()}</span></td>
+                    <td>${feedback.feedback_comment || '<em>No comment</em>'}</td>
+                    <td>${feedback.pdx_feedback || '-'}</td>
+                    <td>${feedback.adx_feedback || '-'}</td>
+                    <td>${feedback.sdx_feedback || '-'}</td>
+                    <td>${feedback.reviewer || '-'}</td>
+                    <td>${new Date(feedback.timestamp).toLocaleString()}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table></div>';
+            content.innerHTML = html;
+            section.style.display = 'block';
+        }
+
+        // Accept/Reject button highlighting functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click event listeners to all Accept/Reject buttons
+            const acceptButtons = document.querySelectorAll('.btn-accept');
+            const rejectButtons = document.querySelectorAll('.btn-reject');
+
+            acceptButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons in the same group
+                    const radioName = this.getAttribute('for');
+                    const radioInput = document.getElementById(radioName);
+                    const groupName = radioInput.name;
+                    
+                    // Remove active class from all buttons in this group
+                    document.querySelectorAll(`input[name="${groupName}"]`).forEach(input => {
+                        const label = document.querySelector(`label[for="${input.id}"]`);
+                        if (label) {
+                            label.classList.remove('active');
+                        }
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                });
+            });
+
+            rejectButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons in the same group
+                    const radioName = this.getAttribute('for');
+                    const radioInput = document.getElementById(radioName);
+                    const groupName = radioInput.name;
+                    
+                    // Remove active class from all buttons in this group
+                    document.querySelectorAll(`input[name="${groupName}"]`).forEach(input => {
+                        const label = document.querySelector(`label[for="${input.id}"]`);
+                        if (label) {
+                            label.classList.remove('active');
+                        }
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
