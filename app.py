@@ -719,16 +719,18 @@ def calculate_account_statistics(account_num, parsed_data, csv_data, comparison_
         # Get parsed diagnoses for this account
         coded_diagnoses = parsed_data.get(account_num, {}).get('coded_diagnoses', [])
         
-        # Calculate SDX statistics
-        sdx_diagnoses = [d for d in coded_diagnoses if d.get('Type', '').upper() == 'SDX']
-        total_sdx = len(sdx_diagnoses)
-        
         # Get ground truth SDX data
         ground_truth_sdx = csv_data.get("sdx", {}).get(account_num, [])
         ground_truth_sdx_codes = {item['icd_code'] for item in ground_truth_sdx}
         
-        # Calculate matched SDX (SDX codes that exist in both parsed and ground truth)
+        # Calculate SDX statistics - FIXED: Total SDX should be from ground truth, not LLM
+        total_sdx = len(ground_truth_sdx)  # Ground truth SDX count
+        
+        # Get LLM extracted SDX data
+        sdx_diagnoses = [d for d in coded_diagnoses if d.get('Type', '').upper() == 'SDX']
         parsed_sdx_codes = {d.get('ICD-10-CM Code', '') for d in sdx_diagnoses}
+        
+        # Calculate matched SDX (SDX codes that exist in both parsed and ground truth)
         matched_sdx = len(parsed_sdx_codes.intersection(ground_truth_sdx_codes))
         
         # Calculate total matched ICDs from comparison data
